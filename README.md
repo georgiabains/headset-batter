@@ -1,14 +1,4 @@
-# Node USB Electron example
-Example Electron application for node-usb
+# Headset battery
+Attempt to access battery of headset.
 
-## Installation
-
-```bash
-yarn
-```
-
-## Running
-
-```bash
-yarn start
-```
+Fork of [Example Electron application for node-usb](https://github.com/node-usb/node-usb-example-electron) by [@thegecko](https://github.com/thegecko).
