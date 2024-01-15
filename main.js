@@ -1,7 +1,45 @@
-// Modules to control application life and create native browser window
+// // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
+
+var HID = require('node-hid');
+HID.setDriverType('libusb');
+
+const run = (async () => {
+  const headset = await HID.devicesAsync(5426, 1324)
+
+//   console.log(headset)
+
+//   console.log(headset[0].path)
+
+  const accessHeadset = new HID.HID( headset[0].path )
+
+  console.log(accessHeadset)
+
+  const getBatteryPercentage = (device) => {
+    try {
+        device.getFeatureReport(0x0409, 0x10)
+        const report = device.readTimeout(1000)[2];
+        if (parseInt(report) > 1)
+            return report;
+        return null;
+
+    } catch (error) {
+        console.log(error)
+        throw new Error('Cannot write to Headset.');
+    }
+  }
+
+  const copy = accessHeadset
+
+  getBatteryPercentage(copy)
+})
+
+
+run()
 const usb = require('usb');
+
+usb.useUsbDkBackend()
 
 let windows = [];
 
@@ -19,6 +57,33 @@ const showDevices = async () => {
             win.webContents.send('devices', text.join('\n'));
         }
     });
+
+    const headset = devices.find((device) => device?.productName === 'Razer Kraken V3 Pro')
+
+    // https://github.com/Tekk-Know/RazerBatteryTaskbar/blob/main/src/main.js
+
+    // console.log(headset)
+
+    await headset.open()
+
+    if (headset.configuration === null) {
+        // Manually found via console logging headset and looking at configurationValue
+        headset.selectConfiguration(1)
+    }
+
+    // console.log(headset.configuration.interfaces)
+
+    await headset.claimInterface(3);
+
+    // const request = await headset.controlTransferOut({
+    //     requestType: 'class',
+    //     recipient: 'interface',
+    //     request: 0x09,
+    //     value: 0x300,
+    //     index: 0x00
+    // }, 'test')
+
+    // console.log(request)
 };
 
 const createWindow = () => {

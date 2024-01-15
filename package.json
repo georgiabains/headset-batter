@@ -14,6 +14,7 @@
     "electron": "^27.0.2"
   },
   "dependencies": {
+    "node-hid": "^3.0.0",
     "nodemon": "^3.0.2",
     "usb": "^2.11.0"
   }
